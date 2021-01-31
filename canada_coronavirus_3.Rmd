@@ -1,0 +1,115 @@
+---
+title: "Canada coronavirus data interpretation Version 3"
+author: "Mert Göksel"
+date: "29/01/2021"
+output: pdf_document
+---
+
+# Version 3!!
+
+\#\#The feedbacks are acknowledged. Necessary changes were made.
+
+```{r, message=FALSE}
+#Import the required libraries
+library(coronavirus) #dataset
+library(dplyr) #data handling
+library(tidyverse) #general 
+library(ggplot2) #plots
+library(ggthemr) #plot themes
+library(RColorBrewer) #colors for plots
+```
+
+\#Importing our data.
+
+```{r}
+#Filter the coronavirus data for "Canada" only and put it into a dataframe.
+canada_data <- coronavirus %>% filter(country == "Canada")
+```
+
+\#Create the different subsets for the 3 categories of data.
+
+```{r}
+#For all categories same plan applies: take the subset of category, 
+#then sum all values that have the same date and put it into 
+#a new dataframe for plotting.
+
+#For Case
+case_temp <- filter(canada_data, #from canada data
+                    canada_data$type == "confirmed") #take rows for "confirmed"
+canada_case <- aggregate(case_temp$cases, #The set that will be used with function
+                         by = list(case_temp$date), #Basis
+                         sum) #function
+
+#For Death  
+death_temp <- filter(canada_data, canada_data$type == "death")
+canada_death <- aggregate(death_temp$cases, by = list(death_temp$date), sum)
+
+#For recovery
+recovery_temp <- filter(canada_data, canada_data$type == "recovered") 
+canada_recovery <- aggregate(recovery_temp$cases, by=list(recovery_temp$date), sum)
+```
+
+\#\#Select a theme. (not necessary)
+
+```{r}
+ggthemr("dust")
+```
+
+\#Plot for total cases per day:
+
+```{r}
+#for all plots, same template will be used.
+
+#Plot for case
+canada_case %>% 
+  ggplot(aes(x=Group.1, y=x, color=x)) + #Group.1 is dates, x is values, color is scaled with values 
+  geom_line() + #lines that connect the value points
+  geom_point() + #points that represent values
+  xlab("Time") + #label of x dimension (Which is time)
+  ylab("Count") + #label of y dimension (Which is Values)
+  scale_x_date(breaks = "2 months") + #Making a date appear every 2 months on x dimension
+  scale_color_gradient(low="darkblue", high="black") + #changes the color scale
+  ggtitle("Canada, Corona, daily total new cases") + #title of plot
+  geom_abline(slope = 0, intercept = 0) + #a reference on y=0 line
+  geom_smooth(color = "orange") #Generalization line of trends in data.
+```
+
+As time progresses, people get bored of precautions. This is evident as the generalization starts to increase at the end. That means people started to dismissing taking caution.
+
+\#Plot for total deaths per day:
+
+```{r}
+#Plot for Death
+canada_death %>% ggplot(aes(x=Group.1, y=x, color=x)) + 
+  geom_line() + 
+  geom_point() + 
+  xlab("Time") + 
+  ylab("Count") +
+  scale_x_date(breaks = "2 months") + 
+  scale_color_gradient(low="darkred", high="black") +
+  ggtitle("Canada, Corona, daily total death rates") + 
+  geom_abline(slope = 0, intercept = 0) +
+  geom_smooth(color = "blue")
+```
+
+At first we did not know how to deal with corona infections. When we started to learn and people were taking precautions deaths dipped. When people started to get sick again, naturally deaths increased too as for some people there is nothing can be done medically.
+
+\#Plot for total recoveries per day:
+
+```{r}
+#Plot for recovery
+canada_recovery %>% ggplot(aes(x=Group.1, y=x, color=x)) + 
+  geom_line() + 
+  geom_point() + 
+  xlab("Time") + 
+  ylab("Count") +
+  scale_x_date(breaks = "2 months") + 
+  scale_color_gradient(low="darkgreen", high="green") +
+  ggtitle("Canada, Corona, daily total recovery rates") + 
+  geom_abline(slope = 0, intercept = 0) +
+  geom_smooth(color = "red")
+```
+
+Same with the death plot, we now know how to deal with the infections. Thus there are more people recovering than the first outbreak. There were too few recoveries in the first outbreak, but now there are at least 5 times of recoveries per day happening.
+
+But there are a few entry errors in the recovery data as on just one day almost 25k recoveries happened. Which is probably not true. And there is an instance of a day where there is a negative amount of recoveries happening. Which is absolutely not possible.
