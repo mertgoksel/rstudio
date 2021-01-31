@@ -1,0 +1,182 @@
+---
+title: "mertgöksel"
+output:
+  pdf_document: default
+  pdf_file: default
+---
+## Question 1
+
+```{r}
+#1
+a <- seq(20,100,20) 
+a
+
+#2
+b <- seq(-10.0, 5.0, .5) 
+b
+
+#3
+c <- seq(12, -6, -3) 
+c
+
+#4
+d <- seq(.01, .09, .02) 
+d
+
+#5
+e <- seq(17, 23, 6/7) 
+e
+
+#6
+f <- c(2:10, 9:2) 
+f
+
+#7
+g <- rep(seq(10,40,10), 4) 
+g
+
+#8
+h <- rep(c(1:3), each = 7) 
+h
+
+#9
+i <- rep(seq(10,60,10), each = 2)[seq(-1,-9,-4)] 
+i
+
+#10
+j <- rep(rep(1:4, each = 2), 3) 
+j
+
+```
+
+## Question 2
+
+```{r}
+# Sigma notations are created with 3 lines;
+# 1st being the range, 
+# 2nd being the formula, 
+# 3th being the sum() function.
+
+#1
+x <- c(1:100)
+x <- x*2
+sum(x)
+
+
+#2
+x <- c(1:100)
+x <- 1/(x^2)
+sum(x)
+
+
+#3
+x <- c(1:10)
+x <- exp(-.5)*(.5^x)/factorial(x)
+sum(x)
+
+
+#4
+x <- c(1:20)
+x <- ((-1)^x)*x^2
+sum(x)
+```
+
+## Question 3
+
+```{r}
+#Enter the column and row index vectors
+n_row = c(1:3)
+n_col = c(1:4)
+```
+
+### a (for multiplications)
+```{r}
+# "tcrossprod()" lets us to create the desired matrix that 
+# contains the multiplications of the elements
+
+# "dimnames()" lets us assign a group name to the rows and columns
+the_matrix <- matrix(tcrossprod(n_col, n_row), nrow = 3, ncol = 4, byrow = TRUE, 
+                     dimnames = list(Spanish = c("uno", "dos", "tres"), 
+                                     German = c("eins", "zwei", "drei", "vier")))
+the_matrix 
+```
+
+### b (change "the_matrix" values to sum of row & column)
+
+```{r}
+sums = outer(n_row, n_col, "+") # "outer()" lets us do algebraic operations with two 
+# vectors of different sizes as it matches their size first
+# We can also use "sapply(n_row, '+', n_col)"
+the_matrix[1:12] <- sums
+the_matrix
+```
+
+## Question 4
+
+```{r}
+vec1 = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+vec2 = c(10, 20, 30, 40, 50, 60)
+vec3 = c("Red", "Blue", "Yellow", "Green", "Black")
+vec4 = c(-1, -2, 10, 20, -3, -4, 30, 40, -5, 50)
+```
+
+
+```{r}
+#a
+q4.a = c(vec1, vec2)
+q4.a
+
+#b
+q4.b = q4.a[q4.a%%3 == 0]
+q4.b
+
+#c
+q4.c = c(vec4[vec4<0], vec3)
+q4.c
+
+#d
+q4.d = c(vec1[seq(1, length(vec1), 2)], vec3[seq(2, length(vec3), 2)])
+q4.d
+
+#e
+sizes = c(length(vec1), length(vec2), length(vec3), length(vec4))
+which(sizes == max(sizes)) #gives the indexes of what we searched
+```
+
+# Question 5
+
+```{r}
+a <- matrix(c(4,3,-5,-1), nrow = 2, ncol = 2)
+a
+
+b <- matrix(c(8,1,1,-6), nrow = 2, ncol = 2)
+b
+
+c <- matrix(c(0,-2,1,4), nrow = 2, ncol = 2)
+c
+
+d <- matrix(c(2,2,1,0), nrow = 2, ncol = 2)
+d
+```
+
+
+```{r}
+#a
+t(a) + b %*% solve(c)
+
+#b
+sizes = c(det(a),det(b),det(c),det(d))
+which(sizes == max(sizes))
+
+#c
+e = cbind(rbind(a,c), rbind(b,d))
+e
+
+#d
+mean(e[,3])
+
+#e
+diag(e) = 0 #diagonal elements of the matrix
+e
+```
+

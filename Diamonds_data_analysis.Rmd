@@ -1,0 +1,172 @@
+---
+title: "Stat291_Project-1"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+  html_notebook: default
+---
+Dumbledore's army:
+
+- 2429066 Mert Göksel 
+- 2290658 Rümeysa Durdağ 
+- 2361160 Merve Çakır 
+
+
+1-)
+
+The data is about daily coronavirus readings, it has 5 columns. 
+This columns are firstly date, then comes the province of the country, the country, 
+latitude/longitude, the type of the case (cases/deaths/recovered) 
+and finally the number of those cases.
+
+```{r}
+library(coronavirus) #CORONAVIRUS DATA
+
+data <- coronavirus #assign the dataset to a variable
+
+head(data) #first 6 rows of the data
+```
+
+2-)
+```{r}
+sapply(data, class)
+```
+3-) Created questions about the dataset:
+
+3.1-) What is the index of the max case number for any type?
+```{r}
+which.max(data$cases)
+data[106531,]
+```
+
+3.2-) What rows are for United states?
+```{r}
+c(min(which(data$country == "US")), max(which(data$country == "US")))
+```
+
+4.1-) Is there any NA value?
+
+```{r}
+any(is.na(data)) 
+```
+
+Our dataframe doesnt contain any NA values but if it did then we would have shown it as
+
+```{r}
+which(is.na(data))
+```
+
+4.2-) Print the col names
+
+```{r}
+names(data)
+```
+
+If there was no names assigned we would have assigned them with
+
+colnames(data) <- c(names) #c(names) = names we gave in order
+
+4.3-) Show first 20 rows of our data:
+
+```{r}
+head(data, 20)
+```
+
+4.4-) The numeric values are latitude/longitude and cases
+
+```{r}
+c(mean(data$lat), mean(data$long), mean(data$cases))
+```
+
+The table of country&cases can be made with the code below but as there are too many countries in the dataset we wont run it on our pdf
+```{r echo = T, results = 'hide'}
+table(data$country, data$cases) 
+```
+
+#4.5-) Order your data depending on one of the numeric variables.
+
+```{r}
+data_ordered <- data[order(data$cases),]
+head(data_ordered)
+#this is too long as well so we printed the head of the dataset.
+```
+
+5.1-) Create a new variable which is a linear combination
+Our numeric variables will be: v1 = latitude, v2 = longitude
+Our formula for linear combination will be = 5v1-4v2
+```{r}
+v1 <- data$lat
+v2 <- data$long
+dumbeldors_army <- 5*v1-4*v2
+data$dumbeldors_army <- dumbeldors_army
+head(data)
+```
+
+5.2-) By using for loops, multiply one of your numeric variables with another one
+We took the lat, long var for v1&v2 but they are too repetitive as each country has many lines of data but their lat&long doesnt change. So we will take only the unique values
+```{r echo = T, results = 'hide'}
+v1_unique = unique(v1)
+v2_unique = unique(v2)
+
+multiply_list <- list()
+for(i in 1:length(v1_unique)){
+  multiply_list[i] <- v1_unique[i]*v2_unique[i]
+}
+mutliply_matrix <- matrix(multiply_list, nrow = length(v1_unique), ncol = length(v2_unique))
+#mutliply_matrix This matrix has too many columns for a pdf so we wont print it.
+```
+
+6-)By using one of your numeric variables, generate a new vector including the values greater than the median of this vector and name it as mynewvector.
+```{r}
+mynewvector <- data$cases[data$cases>median(data$cases)]
+```
+
+7-) Convert your data to a list, show the class of each member of your list
+```{r}
+data_list <- as.list(data)
+lapply(data_list, FUN = typeof)
+```
+
+8-) Select your list elements by using their names.
+```{r echo = T, results = 'hide'}
+data_list$date
+data_list$province
+data_list$country
+data_list$lat
+data_list$long
+data_list$cases
+data_list$dumbeldors_army
+#Because dataset is too long we wont print these.
+```
+
+9-)
+```{r}
+# Because that we have non numeric columns the max function returns the last value as the maximum. 
+# Unlisting date variables is not good but for this questions sake we did it anyway...
+for (i in 1:length(data_list)){
+  list_names <- names(data_list)
+  number <- i
+  name <- names(data_list)[i]
+  maxim <- max(unlist(data_list[list_names[i]]))
+  cat("My", number,"variable name is" ,name , "and the greatest value for my vector is", maxim, "\n")
+}
+```
+
+10-) Change one of your list element to NULL.
+This means deleting the list so it wont show up in the head()
+```{r}
+data_list[["date"]] <- NULL
+head(as.data.frame(data_list))
+```
+As seen above the "date" list is no longer there
+
+11-)
+```{r}
+rm(list = ls(all.names = TRUE))
+```
+
+
+
+
